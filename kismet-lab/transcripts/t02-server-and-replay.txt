@@ -1,0 +1,29 @@
+t02 — Starting the server and replaying the capture through it
+
+The pcapfile data source treats a capture file as an antenna:
+Kismet reads the frames exactly as if a radio had received them.
+
+    $ kismet -c /path/to/lab-capture.pcap:type=pcapfile
+    INFO: Including sub-config file: /etc/kismet/kismet_httpd.conf
+    INFO: Including sub-config file: /etc/kismet/kismet_80211.conf
+    INFO: Including sub-config file: /etc/kismet/kismet_logging.conf
+    ...
+    INFO: Starting Beast webserver on 0.0.0.0:2501
+    INFO: Loaded manufacturer db, 40657 records
+    INFO: Registered PHY handler 'IEEE802.11' as ID 0
+    ...
+    INFO: Data sources passed on the command line (via -c source), ignoring source= definitions in the Kismet config file.
+    INFO: Data source '/home/hatch/workspace/kismet-labwork/lab-capture.pcap:type=pcapfile' launched successfully
+    INFO: Pcapfile '/home/hatch/workspace/kismet-labwork/lab-capture.pcap' closed: end of pcapfile reached
+
+"Closed: end of pcapfile reached" is success, not an error: the
+file is finished, the devices it contained stay in Kismet's
+device list, and the server keeps running.
+
+One deliberate blemish in the log: the run also printed
+    ERROR: Could not open ICAO database .../kismet_adsb_icao.txt.gz,
+    ADSB ICAO lookup will not be available.
+That is the aircraft (ADS-B) lookup table, which ships in a
+package the lab did not download (kismet-adsb-icao-data). It has
+nothing to do with Wi-Fi; the lab left it missing on purpose as
+an example of a non-fatal error.

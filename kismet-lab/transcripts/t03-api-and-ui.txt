@@ -1,0 +1,46 @@
+t03 — The web interface and the REST API answer on loopback
+
+While the t02 server was running, the lab talked to it the way
+any reader can, with curl. The lab's login was set in the site
+config for these runs (httpd_username / httpd_password in
+kismet_site.conf); the first chapter of the guide explains the
+normal first-run setup in the browser.
+
+Without a login, the API refuses — this is the correct answer:
+
+    $ curl http://127.0.0.1:2501/system/status.json
+    <html><head><title>401 Permission denied</title></head><body>
+    <h1>401 Permission denied</h1><br><p>This resource requires a
+    login or session token.</p></body></html>
+
+With the login, the server describes itself (excerpt):
+
+    $ curl -u labadmin:... http://127.0.0.1:2501/system/status.json
+    {"kismet.system.version": "2026.10.R1-9ea2ca0e9",
+     "kismet.system.devices.count": 3,
+     "kismet.system.memory.rss": 29224, ...}
+
+devices.count is 3 — exactly the two invented access points and
+the one invented client in the hand-built capture. The device
+list endpoint names them:
+
+    $ curl -u labadmin:... http://127.0.0.1:2501/devices/last-time/1/devices.json
+    3 devices
+    - 02:AA:BB:CC:DD:01 | Wi-Fi Client |            | packets: 3
+    - 02:11:22:33:44:02 | Wi-Fi AP     | LibraryNet | packets: 6
+    - 02:11:22:33:44:01 | Wi-Fi AP     | CafeWiFi   | packets: 7
+
+The packet counts add up from the generated file: six beacons
+per access point, plus the probe response Kismet credits to
+CafeWiFi (7), and the client's two probe requests plus that
+same response seen from the other side (3).
+
+The data source endpoint confirms where the frames came from:
+
+    $ curl -u labadmin:... http://127.0.0.1:2501/datasource/all_sources.json
+    name: .../lab-capture.pcap | type: pcapfile | packets: 15
+
+And the web interface itself is served on the same port:
+
+    $ curl -u labadmin:... http://127.0.0.1:2501/
+    HTTP 200, 10020 bytes, <title>Kismet</title>

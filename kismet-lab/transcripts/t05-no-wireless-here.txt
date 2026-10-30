@@ -1,0 +1,22 @@
+t05 — The lab's ceiling: no wireless hardware, stated plainly
+
+The lab machine has no Wi-Fi adapter and no way to enter
+monitor mode. The evidence:
+
+    $ iw dev
+    bash: iw: command not found          (no wireless tools installed)
+
+    $ ip -brief link
+    lo               UNKNOWN  00:00:00:00:00:00 <LOOPBACK,UP,LOWER_UP>
+    host0@if3        UP       72:dc:7c:34:2f:fd  <BROADCAST,MULTICAST,UP>
+
+    $ ls /sys/class/net/*/wireless
+    ls: cannot access '/sys/class/net/*/wireless': No such file or directory
+
+So everything live in this guide was verified the honest way:
+the server, the web interface, the API, the config system and
+the log tools ran for real, fed by a capture file replayed
+through Kismet's pcapfile data source — the same code path that
+processes live frames after a radio receives them. Choosing an
+adapter, putting it in monitor mode and capturing real airwaves
+are taught from the documentation and labelled as such.

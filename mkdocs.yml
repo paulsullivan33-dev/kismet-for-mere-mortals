@@ -1,0 +1,28 @@
+site_name: Kismet for Mere Mortals
+site_description: A wireless network monitor that only listens and never transmits. How it builds a census of access points and clients from the frames they broadcast, how to learn it safely on replayed capture files, and how to read what it finds through the web interface, the API and the run log, with the law and the limits stated plainly.
+site_url: https://paulsullivan33-dev.github.io/kismet-for-mere-mortals/
+copyright: 'Part of <a href="https://paulsullivan33-dev.github.io/mere-mortals/">For Mere Mortals</a> · Text CC BY 4.0, code MIT'
+
+# Guides live at the repo root (nice for GitHub browsing).
+# The deploy workflow copies them into docs/ before building.
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - What Kismet Is: what-kismet-is.md
+  - The Rules of the Air: the-rules-of-the-air.md
+  - The Moving Parts: the-moving-parts.md
+  - Installing Kismet: installing-kismet.md
+  - First Run — the Server and the Login: first-run.md
+  - Replaying a Capture: replaying-a-capture.md
+  - Reading the Results: reading-the-results.md
+  - Asking the API: asking-the-api.md
+  - Listening Live: listening-live.md
+  - The Log and Its Tools: the-log-and-its-tools.md
+  - Configuration: configuration.md
+  - Recipes: recipes.md
+  - Limits: limits.md
+  - Troubleshooting: troubleshooting.md
+  - Glossary: glossary.md
+  - Writing Criteria: criteria.md

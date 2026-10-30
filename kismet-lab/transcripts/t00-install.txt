@@ -1,0 +1,53 @@
+t00 — Installing Kismet 2026.10.R1 from the project's own packages
+Lab machine: Ubuntu 24.04 (noble), x86_64, no wireless hardware.
+
+Kismet is not in Ubuntu 24.04's own repositories (apt-cache policy
+kismet returns nothing), so the lab used the project's official
+apt repository for noble, which offers release 2026-10-R1:
+
+    $ curl -s https://www.kismetwireless.net/repos/apt/release/noble/dists/noble/main/binary-amd64/Packages.gz | zcat | grep -A1 '^Package: kismet-core'
+    Package: kismet-core
+    Version: 2026-10-R1
+
+    Package: kismet-capture-linux-wifi
+    Version: 2026-10-R1
+    Depends: libcap2-bin, libcap2, libwebsockets19t64, libpcap0.8t64,
+             libnl-3-200, libnl-genl-3-200, libnm0, libglib2.0-0t64
+
+The lab machine's package manager was locked by other work, so
+instead of installing, the lab downloaded the .deb files and
+extracted them — the same files an apt install would have used:
+
+    $ curl -sO .../pool/main/k/kismet-core/kismet-core_2026-10-R1_amd64.deb
+    $ curl -sO .../pool/main/k/kismet-capture-linux-wifi/kismet-capture-linux-wifi_2026-10-R1_amd64.deb
+    $ curl -sO .../pool/main/k/kismet-logtools/kismet-logtools_2026-10-R1_amd64.deb
+    $ apt-get download libprotobuf32t64 libnm0     (the only two missing libraries)
+    $ dpkg -i *.deb
+    dpkg: error: dpkg frontend lock was locked by another process with pid 22590
+
+    $ for d in debs/*.deb; do dpkg-deb -x "$d" root/; done
+    $ ls root/usr/bin/
+    kismet  kismet_cap_kismetdb  kismet_cap_linux_wifi
+    kismet_cap_pcapfile  kismet_discovery  kismet_server
+    kismetdb_clean  kismetdb_dump_devices  kismetdb_statistics
+    kismetdb_strip_packets  kismetdb_to_atlog  kismetdb_to_celllog
+    kismetdb_to_cellndjson  kismetdb_to_gpx  kismetdb_to_hdlc
+    kismetdb_to_kml  kismetdb_to_pcap  kismetdb_to_wiglecsv
+
+    $ LD_LIBRARY_PATH=root/usr/lib/x86_64-linux-gnu root/usr/bin/kismet --version
+    Kismet 2026.10.R1-9ea2ca0e9
+
+Two extraction quirks the server runs needed (both are lab-only;
+a normal apt install sets these up itself):
+
+  * Kismet expands %E in its configs to the installed /etc/kismet,
+    so the extracted config directory was linked there for the
+    lab runs:  ln -s <lab>/root/etc/kismet /etc/kismet
+  * Kismet only runs capture tools from its configured helper
+    path (helper_binary_path, default %B). The lab added its
+    extracted bin directory via the standard override file
+    /etc/kismet/kismet_site.conf:
+        helper_binary_path=/home/hatch/workspace/kismet-labwork/root/usr/bin
+    Without it, every data source fails with:
+        ERROR: Data source '...lab-capture.pcap:type=pcapfile' failed
+        to launch: Capture tool not installed

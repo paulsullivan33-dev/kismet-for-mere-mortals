@@ -1,0 +1,25 @@
+t01 — Building a small capture by hand (kismet-lab/make_pcap.py)
+
+The lab has no wireless hardware, so it built the airwaves
+instead: 15 raw 802.11 frames written byte by byte in Python —
+beacons from two invented access points, probe requests from one
+invented client, one probe response. Invented devices only:
+
+    CafeWiFi    BSSID 02:11:22:33:44:01, channel 6
+    LibraryNet  BSSID 02:11:22:33:44:02, channel 1
+    client      MAC   02:AA:BB:CC:DD:01
+
+    $ python3 make_pcap.py
+    wrote lab-capture.pcap: 15 frames, 1303 bytes
+
+tcpdump reads the file back and decodes the frames, which proves
+the bytes are real 802.11 and not just plausible-looking:
+
+    $ tcpdump -r lab-capture.pcap -c 3
+    reading from file lab-capture.pcap, link-type IEEE802_11_RADIO (802.11 plus radiotap header), snapshot length 65535
+    00:00:00.000000 Beacon (CafeWiFi) [1.0* 2.0* 5.5* 11.0* Mbit] ESS CH: 6, PRIVACY
+    00:00:00.001000 Beacon (CafeWiFi) [1.0* 2.0* 5.5* 11.0* Mbit] ESS CH: 6, PRIVACY
+    00:00:00.002000 Beacon (CafeWiFi) [1.0* 2.0* 5.5* 11.0* Mbit] ESS CH: 6, PRIVACY
+
+(The timestamps in the file are an arbitrary lab time,
+2026-01-01 00:00:00 UTC, set by the generator script.)

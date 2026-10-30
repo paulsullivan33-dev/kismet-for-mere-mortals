@@ -1,0 +1,30 @@
+t04 — Reading the run back from the .kismet log, server stopped
+
+Every run writes a log named like Kismet-20261030-04-17-17-1.kismet
+(a SQLite database). The log tools read it without the server:
+
+    $ kismetdb_statistics --in Kismet-20261030-04-17-17-1.kismet
+    * Cleaning database 'Kismet-20261030-04-17-17-1.kismet'...
+      KismetDB version: 11
+
+      Packets: 15
+      Devices: 3
+      1 datasources
+        .../lab-capture.pcap  ... pcapfile
+          Packets: 15
+
+      Packet tags found in log:
+        DOT11_BEACON_SSID DOT11_PROBE_REQ DOT11_RESPONSE_SSID
+
+    $ kismetdb_dump_devices --in Kismet-20261030-04-17-17-1.kismet --out dump-devices.json
+    3 devices in dumped JSON
+    - 02:AA:BB:CC:DD:01 Wi-Fi Client ''
+    - 02:11:22:33:44:02 Wi-Fi AP 'LibraryNet'
+    - 02:11:22:33:44:01 Wi-Fi AP 'CafeWiFi'
+
+Same three devices, same story, from the log alone — the log is
+the record of the run, not a by-product. The package ships more
+converters alongside these two (all present in the lab install):
+kismetdb_to_pcap, kismetdb_to_wiglecsv, kismetdb_to_kml,
+kismetdb_to_gpx, kismetdb_clean, kismetdb_strip_packets and the
+cell/ads-b exporters.
